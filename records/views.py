@@ -1,10 +1,12 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from .models import MedicalRecord
 from .services import MedicalRecordService
 from .serializers import MedicalRecordSerializer
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_medical_record_view(request):
     if request.method == 'POST':
         user = request.user
@@ -18,6 +20,7 @@ def create_medical_record_view(request):
             return JsonResponse({'status': 'error', 'message': serializer.errors})
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_medical_records_for_user_view(request):
     if request.method == 'GET':
         user = request.user
@@ -28,6 +31,7 @@ def get_medical_records_for_user_view(request):
         return JsonResponse(serializer.data, safe=False)
 
 @api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
 def update_medical_record_view(request, record_id):
     if request.method in ['PUT', 'PATCH']:
         data = request.data
@@ -41,6 +45,7 @@ def update_medical_record_view(request, record_id):
             return JsonResponse({'status': 'error', 'message': serializer.errors})
 
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def delete_medical_record_view(request, record_id):
     if request.method == 'DELETE':
         success, message = MedicalRecordService.delete_medical_record(record_id)
