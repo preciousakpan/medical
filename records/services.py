@@ -66,7 +66,22 @@ class MedicalRecordService:
         user = get_object_or_404(User, id=user_id)
         medical_records = MedicalRecord.objects.filter(user=user)
         serializer = MedicalRecordSerializer(medical_records, many=True)
-        return serializer.data
+        serialized_data = serializer.data
+
+        decrypted_records = []
+        for record in serialized_data:
+            try:
+                decrypted_patient_name = decrypt_field(record['patient_name'])
+                decrypted_doctor_name = decrypt_field(record['doctor'])
+
+                record['patient_name'] = decrypted_patient_name
+                record['doctor'] = decrypted_doctor_name
+
+                decrypted_records.append(record)
+            except Exception as e:
+                return(f"Error decoding record: {record}. Error: {e}")
+
+        return decrypted_records
     
     @staticmethod
     def update_medical_record(record_id, diagnosis, treatment, doctor, treatment_date):
