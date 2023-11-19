@@ -30,9 +30,9 @@ def get_users_view(request):
     if request.method == 'GET':
         try:
             users_json = UserService.get_all_users()
-            return ResponseHandler.success(users_json)
+            return JsonResponse(ResponseHandler.success(users_json), status=200)
         except Exception as e:
-            return ResponseHandler.error(str(e))
+            return JsonResponse(ResponseHandler.error(str(e)), status=400)
         
 @api_view(['POST'])
 def generate_reset_token_view(request):
@@ -41,9 +41,9 @@ def generate_reset_token_view(request):
             email = request.data.get('email')
             user = User.objects.get(email=email)
             token = UserService.generate_reset_token(user)
-            return ResponseHandler.success(token)
+            return JsonResponse(ResponseHandler.success(token), status=200)
         except User.DoesNotExist:
-            return ResponseHandler.error('User not found', status_code=404)
+            return JsonResponse(ResponseHandler.error('User not found'), status=404)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -54,9 +54,9 @@ def reset_password_view(request):
         
         success, message = UserService.reset_password(token, new_password, request.user.id)
         if success:
-            return ResponseHandler.success(message)
+            return JsonResponse(ResponseHandler.success(message), status=200)
         else:
-            return ResponseHandler.error(message)
+            return JsonResponse(ResponseHandler.error(message), status=400)
         
 @api_view(['POST'])
 def login_view(request):
@@ -78,6 +78,6 @@ def get_users_view(request):
     if request.method == 'GET':
         try:
             users_json = UserService.get_all_users()
-            return ResponseHandler.success(users_json)
+            return JsonResponse(ResponseHandler.success(users_json), status=200)
         except Exception as e:
-            return ResponseHandler.error(str(e))
+            return JsonResponse(ResponseHandler.error(str(e)), status=400)

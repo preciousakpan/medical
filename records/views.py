@@ -5,10 +5,8 @@ from .services import MedicalRecordService
 from .serializers import MedicalRecordSerializer
 from medical.response_handler import ResponseHandler
 from users.permissions import IsAdmin
+from django.http import JsonResponse
 
-
-
-# TODO: make all views and services unifrom with try and except and put error messages within services not views
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdmin])
 def create_medical_record_view(request):
@@ -31,7 +29,7 @@ def create_medical_record_view(request):
             treatment_date=treatment_date
         )
 
-        return ResponseHandler.success(created_record)
+        return JsonResponse(ResponseHandler.success(created_record), status=200)
 
 
 @api_view(['GET'])
@@ -39,13 +37,11 @@ def create_medical_record_view(request):
 def get_medical_records_for_user_view(request, user_id):
     if request.method == 'GET':
         if request.user.id != int(user_id):
-            return ResponseHandler.error("Unauthorized access", status_code=403)
+            return JsonResponse(ResponseHandler.error("Unauthorized access"), status=403)
         records = MedicalRecordService.get_medical_records_for_user(user_id)
         
-        return ResponseHandler.success(records)
+        return JsonResponse(ResponseHandler.success(records), status=200)
 
-
-# TODO: Check all status codes
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated, IsAdmin])
 def update_medical_record_view(request, record_id):
@@ -67,9 +63,9 @@ def update_medical_record_view(request, record_id):
         )
         
         if success:
-            return ResponseHandler.success(message)
+            return JsonResponse(ResponseHandler.success(message), status=200)
         else:
-            return ResponseHandler.error(message)
+            return JsonResponse(ResponseHandler.error(message), status=400)
 
 
 @api_view(['DELETE'])
@@ -78,6 +74,6 @@ def delete_medical_record_view(request, record_id):
     if request.method == 'DELETE':
         success, message = MedicalRecordService.delete_medical_record(record_id)
         if success:
-            return ResponseHandler.success(message)
+            return JsonResponse(ResponseHandler.success(message), status=200)
         else:
-            return ResponseHandler.error(message)
+            return JsonResponse(ResponseHandler.error(message), status=400)
