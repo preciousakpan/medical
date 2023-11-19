@@ -7,6 +7,8 @@ from django.contrib.auth.hashers import make_password
 from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+from .permissions import CustomTokenObtainPairSerializer
 
 class UserService:
     @staticmethod
@@ -49,7 +51,6 @@ class UserService:
         return default_token_generator.make_token(user)
 
 
-# TODO: Fix reset password
     @staticmethod
     def reset_password(token, new_password, user_id):
         try:
@@ -68,6 +69,9 @@ class UserService:
     def login(name, password):
         user = authenticate(username=name, password=password)
         if user is not None:
-            return True, user
+            refresh = RefreshToken.for_user(user)
+            custom_token_serializer = CustomTokenObtainPairSerializer()
+            token = custom_token_serializer.get_token(user)            
+            return True, user, refresh, token
         else:
-            return False, None
+            return False, None, None, None

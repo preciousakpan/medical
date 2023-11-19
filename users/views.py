@@ -64,12 +64,16 @@ def login_view(request):
         username = request.data.get('name')
         password = request.data.get('password')
         
-        success, user = UserService.login(username, password)
+        success, user, refresh, token = UserService.login(username, password)
         
         if success:
-            return JsonResponse(ResponseHandler.success('Login successful'), status=200)
+            return JsonResponse(ResponseHandler.success({
+                'message': 'Login successful',
+                'refresh_token': str(refresh),
+                'token': str(token)
+            }), status=200)        
         else:
-            return JsonResponse(ResponseHandler.error('Login failed, please check credentials'), status=200)
+            return JsonResponse(ResponseHandler.error('Login failed, please check credentials'), status=400)
 
 
 @api_view(['GET'])
