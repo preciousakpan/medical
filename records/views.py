@@ -12,8 +12,8 @@ from django.http import JsonResponse
 def create_medical_record_view(request):
     if request.method == 'POST':
         data = request.data
-        user = request.user  
 
+        user_id = data.get('user_id') 
         dob = data.get('dob')
         diagnosis = data.get('diagnosis')
         treatment = data.get('treatment')
@@ -21,7 +21,7 @@ def create_medical_record_view(request):
         treatment_date = data.get('treatment_date')
 
         created_record = MedicalRecordService.create_medical_record(
-            user=user,
+            user_id=user_id,
             dob=dob,
             diagnosis=diagnosis,
             treatment=treatment,

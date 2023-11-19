@@ -22,7 +22,11 @@ def decrypt_field(encrypted_field):
 
 class MedicalRecordService:
     @staticmethod
-    def create_medical_record(user, dob, diagnosis, treatment, doctor, treatment_date):
+    def create_medical_record(user_id, dob, diagnosis, treatment, doctor, treatment_date):
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return False, f"User does not exist with ID: {user_id}"
         
         treatment_date_obj = datetime.strptime(treatment_date, '%Y-%m-%d').date()
         if treatment_date_obj <= date.today():
