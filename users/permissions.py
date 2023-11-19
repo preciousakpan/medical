@@ -19,3 +19,4 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    pass
