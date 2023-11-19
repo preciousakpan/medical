@@ -5,18 +5,21 @@ from .services import UserService
 from django.core.exceptions import ValidationError
 from medical.response_handler import ResponseHandler
 from django.contrib.auth.models import User
-from .permissions import IsTokenOwner 
+from .permissions import IsTokenOwner
+
+
+
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def create_user_view(request):
     if request.method == 'POST':
         name = request.data.get('name')
         email = request.data.get('email')
         password = request.data.get('password')
+        is_admin = request.data.get('is_admin')
         
         try:
-            user = UserService.create_user(name, email, password)
+            user = UserService.create_user(name, email, password, is_admin)
             if isinstance(user, str):
                 return ResponseHandler.error(user)
             else:

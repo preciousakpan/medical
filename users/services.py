@@ -11,7 +11,7 @@ import json
 
 class UserService:
     @staticmethod
-    def create_user(name, email, password):
+    def create_user(name, email, password, is_admin):
         hashed_password = make_password(password)
         try:
             existing_user = User.objects.filter(email=email).exists()
@@ -24,7 +24,7 @@ class UserService:
                 raise ValidationError("User with this name already exists.")
 
 
-            user = User.objects.create(username=name, email=email, password=hashed_password)
+            user = User.objects.create(username=name, email=email, password=hashed_password, is_staff=is_admin)
             return user
         except ValidationError as e:
             return str(e)
@@ -37,6 +37,7 @@ class UserService:
                 'id': user.id,
                 'name': user.username,
                 'email': user.email,
+                'is_admin': user.is_staff,
                 'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
             }
             for user in users
