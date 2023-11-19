@@ -5,7 +5,7 @@ from .services import UserService
 from django.core.exceptions import ValidationError
 from medical.response_handler import ResponseHandler
 from django.contrib.auth.models import User
-from .permissions import IsTokenOwner
+from django.http import JsonResponse
 
 @api_view(['POST'])
 def create_user_view(request):
@@ -18,11 +18,11 @@ def create_user_view(request):
         try:
             user = UserService.create_user(name, email, password, is_admin)
             if isinstance(user, str):
-                return ResponseHandler.error(user)
+                return JsonResponse(ResponseHandler.error(user), status=400)
             else:
-                return ResponseHandler.success('User created successfully')
+                return JsonResponse(ResponseHandler.success('User created successfully'), status=201)
         except ValidationError as e:
-            return ResponseHandler.error(str(e))
+            return JsonResponse(ResponseHandler.error(str(e)), status=400)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -35,7 +35,6 @@ def get_users_view(request):
             return ResponseHandler.error(str(e))
         
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def generate_reset_token_view(request):
     if request.method == 'POST':
         try:
@@ -53,7 +52,7 @@ def reset_password_view(request):
         token = request.data.get('token')
         new_password = request.data.get('new_password')
         
-        success, message = UserService.reset_password(token, new_password)
+        success, message = UserService.reset_password(token, new_password, request.user.id)
         if success:
             return ResponseHandler.success(message)
         else:

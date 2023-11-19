@@ -52,10 +52,10 @@ class UserService:
 
 # TODO: Fix reset password
     @staticmethod
-    def reset_password(token, new_password):
+    def reset_password(token, new_password, user_id):
         try:
             uid = str(urlsafe_base64_decode(token))
-            user = User.objects.get(pk=uid)
+            user = User.objects.get(pk=user_id)
             if default_token_generator.check_token(user, token):
                 user.set_password(new_password)
                 user.save()
