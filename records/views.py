@@ -11,17 +11,27 @@ from medical.response_handler import ResponseHandler
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_medical_record_view(request):
-    if request.method == 'POST':
-        user = request.user
+    if request.method == GET:
         data = request.data
-        
-# TODO: Put serializer in service
-        serializer = MedicalRecordSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save(user=user)
-            return ResponseHandler.success('Medical record created successfully')
-        else:
-            return ResponseHandler.error(serializer.errors)
+        user = request.user  
+
+        dob = data.get('dob')
+        diagnosis = data.get('diagnosis')
+        treatment = data.get('treatment')
+        doctor = data.get('doctor')
+        treatment_date = data.get('treatment_date')
+
+        created_record = MedicalRecordService.create_medical_record(
+            user=user,
+            dob=dob,
+            diagnosis=diagnosis,
+            treatment=treatment,
+            doctor=doctor,
+            treatment_date=treatment_date
+        )
+
+        return ResponseHandler.success(created_record)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -33,19 +43,33 @@ def get_medical_records_for_user_view(request, user_id):
         
         return ResponseHandler.success(records)
 
+
+# TODO: Check all status codes
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def update_medical_record_view(request, record_id):
     if request.method in ['PUT', 'PATCH']:
         data = request.data
+        user = request.user  
+
+        diagnosis = data.get('diagnosis')
+        treatment = data.get('treatment')
+        doctor = data.get('doctor')
+        treatment_date = data.get('treatment_date')
+
+        success, message = MedicalRecordService.update_medical_record(
+            record_id=record_id,
+            diagnosis=diagnosis,
+            treatment=treatment,
+            doctor=doctor,
+            treatment_date=treatment_date
+        )
         
-        medical_record = MedicalRecord.objects.get(pk=record_id)
-        serializer = MedicalRecordSerializer(medical_record, data=data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return ResponseHandler.success('Medical record updated successfully')
+        if success:
+            return ResponseHandler.success(message)
         else:
-            return ResponseHandler.error(serializer.errors)
+            return ResponseHandler.error(message)
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
