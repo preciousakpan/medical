@@ -5,8 +5,10 @@ from .services import UserService
 from django.core.exceptions import ValidationError
 from medical.response_handler import ResponseHandler
 from django.contrib.auth.models import User
+from .permissions import IsTokenOwner 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_user_view(request):
     if request.method == 'POST':
         name = request.data.get('name')
@@ -23,6 +25,7 @@ def create_user_view(request):
             return ResponseHandler.error(str(e))
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_users_view(request):
     if request.method == 'GET':
         try:
@@ -32,6 +35,7 @@ def get_users_view(request):
             return ResponseHandler.error(str(e))
         
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def generate_reset_token_view(request):
     if request.method == 'POST':
         try:
@@ -43,6 +47,7 @@ def generate_reset_token_view(request):
             return ResponseHandler.error('User not found', status_code=404)
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def reset_password_view(request):
     if request.method == 'POST':
         token = request.data.get('token')
@@ -55,6 +60,7 @@ def reset_password_view(request):
             return ResponseHandler.error(message)
         
 @api_view(['POST'])
+@permission_classes([IsAuthenticated, IsTokenOwner])
 def login_view(request):
     if request.method == 'POST':
         username = request.data.get('name')
@@ -69,6 +75,7 @@ def login_view(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_users_view(request):
     if request.method == 'GET':
         try:

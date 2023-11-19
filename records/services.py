@@ -1,4 +1,7 @@
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from .models import MedicalRecord
+from .serializers import MedicalRecordSerializer
 
 class MedicalRecordService:
     @staticmethod
@@ -15,10 +18,14 @@ class MedicalRecordService:
         return medical_record
 
     @staticmethod
-    def get_medical_records_for_user(user):
+    def get_medical_records_for_user(user_id):
+        user = get_object_or_404(User, id=user_id)
         medical_records = MedicalRecord.objects.filter(user=user)
-        return medical_records
+        serializer = MedicalRecordSerializer(medical_records, many=True)
+        return serializer.data
+    
 
+# TODO: you should not be able to update the userId and name, name should be gotten from the user model
     @staticmethod
     def update_medical_record(record_id, **kwargs):
         try:

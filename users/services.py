@@ -48,6 +48,8 @@ class UserService:
     def generate_reset_token(user):
         return default_token_generator.make_token(user)
 
+
+# TODO: Fix reset password
     @staticmethod
     def reset_password(token, new_password):
         try:

@@ -5,12 +5,17 @@ from .services import MedicalRecordService
 from .serializers import MedicalRecordSerializer
 from medical.response_handler import ResponseHandler
 
+
+
+# TODO: make all views and services unifrom with try and except and put error messages within services not views
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_medical_record_view(request):
     if request.method == 'POST':
         user = request.user
         data = request.data
         
+# TODO: Put serializer in service
         serializer = MedicalRecordSerializer(data=data)
         if serializer.is_valid():
             serializer.save(user=user)
@@ -19,17 +24,17 @@ def create_medical_record_view(request):
             return ResponseHandler.error(serializer.errors)
 
 @api_view(['GET'])
-def get_medical_records_for_user_view(request):
+@permission_classes([IsAuthenticated])
+def get_medical_records_for_user_view(request, user_id):
     if request.method == 'GET':
-        user = request.user
+        if request.user.id != int(user_id):
+            return ResponseHandler.error("Unauthorized access", status_code=403)
+        records = MedicalRecordService.get_medical_records_for_user(user_id)
         
-        medical_records = MedicalRecord.objects.filter(user=user)
-        serializer = MedicalRecordSerializer(medical_records, many=True)
-        
-        return ResponseHandler.success(serializer.data)
+        return ResponseHandler.success(records)
 
 @api_view(['PUT', 'PATCH'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def update_medical_record_view(request, record_id):
     if request.method in ['PUT', 'PATCH']:
         data = request.data
@@ -43,7 +48,7 @@ def update_medical_record_view(request, record_id):
             return ResponseHandler.error(serializer.errors)
 
 @api_view(['DELETE'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def delete_medical_record_view(request, record_id):
     if request.method == 'DELETE':
         success, message = MedicalRecordService.delete_medical_record(record_id)
