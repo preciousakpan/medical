@@ -38,8 +38,11 @@ def get_users_view(request):
 def generate_reset_token_view(request):
     if request.method == 'POST':
         try:
-            email = request.data.get('email')
-            user = User.objects.get(email=email)
+            name = request.data.get('name')
+            if request.user.username != str(name):
+                return JsonResponse(ResponseHandler.error("Unauthorized access"), status=403)
+
+            user = User.objects.get(username=name)
             token = UserService.generate_reset_token(user)
             return JsonResponse(ResponseHandler.success(token), status=200)
         except User.DoesNotExist:
@@ -64,13 +67,12 @@ def login_view(request):
         username = request.data.get('name')
         password = request.data.get('password')
         
-        success, user, refresh, token = UserService.login(username, password)
+        success, user, token = UserService.login(username, password)
         
         if success:
             return JsonResponse(ResponseHandler.success({
                 'message': 'Login successful',
-                'refresh_token': str(refresh),
-                'token': str(token)
+                'token': token
             }), status=200)        
         else:
             return JsonResponse(ResponseHandler.error('Login failed, please check credentials'), status=400)

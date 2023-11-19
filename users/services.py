@@ -9,6 +9,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .permissions import CustomTokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserService:
     @staticmethod
@@ -69,9 +70,9 @@ class UserService:
     def login(name, password):
         user = authenticate(username=name, password=password)
         if user is not None:
-            refresh = RefreshToken.for_user(user)
-            custom_token_serializer = CustomTokenObtainPairSerializer()
-            token = custom_token_serializer.get_token(user)            
-            return True, user, refresh, token
+            custom_token_serializer = CustomTokenObtainPairSerializer(TokenObtainPairSerializer)
+            refresh_token = custom_token_serializer.get_token(user)
+            token = str(refresh_token.access_token)
+            return True, user, token        
         else:
-            return False, None, None, None
+            return False, None, None
