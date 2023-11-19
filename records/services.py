@@ -39,13 +39,27 @@ class MedicalRecordService:
         
         }
 
+        encrypted_patient_name = encrypt_field(data_to_serialize['patient_name'])
+        encrypted_doctor_name = encrypt_field(data_to_serialize['doctor'])
+
+        data_to_serialize['patient_name'] = encrypted_patient_name
+        data_to_serialize['doctor'] = encrypted_doctor_name
+
         serializer = MedicalRecordSerializer(data=data_to_serialize)
         if serializer.is_valid():
-            serializer.save(user=user)
-            return True, serializer.data
+            medical_record = MedicalRecord.objects.create(
+                user=user,
+                patient_name=encrypted_patient_name,
+                date_of_birth=dob,
+                diagnosis=diagnosis,
+                treatment=treatment,
+                doctor=encrypted_doctor_name,
+                treatment_date=treatment_date
+            )
+            serialized_record = MedicalRecordSerializer(medical_record).data
+            return True, serialized_record
         else:
             return False, serializer.errors
-
     
     @staticmethod
     def get_medical_records_for_user(user_id):
