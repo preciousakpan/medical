@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-rcfns7=dc8_nb1p8vvq5!8vvy-6_uf(pjayctl$&r2&ueb6v9g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,7 +39,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 
