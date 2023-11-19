@@ -12,7 +12,7 @@ from users.permissions import IsAdmin
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdmin])
 def create_medical_record_view(request):
-    if request.method == GET:
+    if request.method == 'POST':
         data = request.data
         user = request.user  
 

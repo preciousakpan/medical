@@ -1,18 +1,28 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.hashers import make_password
+from datetime import date, datetime
 from .models import MedicalRecord
 from .serializers import MedicalRecordSerializer
 
 class MedicalRecordService:
     @staticmethod
     def create_medical_record(user, dob, diagnosis, treatment, doctor, treatment_date):
+        
+        treatment_date_obj = datetime.strptime(treatment_date, '%Y-%m-%d').date()
+        if treatment_date_obj <= date.today():
+            return False, "Treatment date must be a future date"
+
+        hashed_doctor = make_password(doctor)
+        hashed_diagnosis = make_password(diagnosis)
+        hashed_treatment = make_password(treatment)
         data_to_serialize = {
             'user': user.id,
             'patient_name': user.username,
             'date_of_birth': dob,
-            'diagnosis': diagnosis,
-            'treatment': treatment,
-            'doctor': doctor,
+            'diagnosis': hashed_diagnosis,
+            'treatment': hashed_treatment,
+            'doctor': hashed_doctor,
             'treatment_date': treatment_date
         
         }
@@ -20,9 +30,9 @@ class MedicalRecordService:
         serializer = MedicalRecordSerializer(data=data_to_serialize)
         if serializer.is_valid():
             serializer.save(user=user)
-            return serializer.data
+            return True, serializer.data
         else:
-            return serializer.errors
+            return False, serializer.errors
 
     
     @staticmethod
@@ -38,6 +48,11 @@ class MedicalRecordService:
             medical_record = MedicalRecord.objects.get(pk=record_id)
         except MedicalRecord.DoesNotExist:
             return False, "Medical record not found"
+        
+        
+        treatment_date_obj = datetime.strptime(treatment_date, '%Y-%m-%d').date()
+        if treatment_date_obj <= date.today():
+            return False, "Treatment date must be a future date"
 
         data_to_update = {
             'diagnosis': diagnosis,

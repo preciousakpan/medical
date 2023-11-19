@@ -60,7 +60,6 @@ def reset_password_view(request):
             return ResponseHandler.error(message)
         
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, IsTokenOwner])
 def login_view(request):
     if request.method == 'POST':
         username = request.data.get('name')
