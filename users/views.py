@@ -67,9 +67,9 @@ def login_view(request):
         success, user = UserService.login(username, password)
         
         if success:
-            return ResponseHandler.success('Login successful')
+            return JsonResponse(ResponseHandler.success('Login successful'), status=200)
         else:
-            return ResponseHandler.error('Login failed, please check credentials')
+            return JsonResponse(ResponseHandler.error('Login failed, please check credentials'), status=200)
 
 
 @api_view(['GET'])

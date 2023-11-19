@@ -7,7 +7,6 @@ from django.contrib.auth.hashers import make_password
 from django.core.serializers import serialize
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth import authenticate
-import json
 
 class UserService:
     @staticmethod
