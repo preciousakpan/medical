@@ -7,9 +7,6 @@ from medical.response_handler import ResponseHandler
 from django.contrib.auth.models import User
 from .permissions import IsTokenOwner
 
-
-
-
 @api_view(['POST'])
 def create_user_view(request):
     if request.method == 'POST':

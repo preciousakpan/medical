@@ -14,9 +14,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user:User):
         token = super().get_token(user)
-        token['role'] = user.is_staff
+        token['is_admin'] = user.is_staff
 
         return token
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
+    serializer_class = CustomTokenObtainPairSerializer
+
+class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_staff

@@ -4,12 +4,13 @@ from .models import MedicalRecord
 from .services import MedicalRecordService
 from .serializers import MedicalRecordSerializer
 from medical.response_handler import ResponseHandler
+from users.permissions import IsAdmin
 
 
 
 # TODO: make all views and services unifrom with try and except and put error messages within services not views
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdmin])
 def create_medical_record_view(request):
     if request.method == GET:
         data = request.data
@@ -46,7 +47,7 @@ def get_medical_records_for_user_view(request, user_id):
 
 # TODO: Check all status codes
 @api_view(['PUT', 'PATCH'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdmin])
 def update_medical_record_view(request, record_id):
     if request.method in ['PUT', 'PATCH']:
         data = request.data
@@ -72,7 +73,7 @@ def update_medical_record_view(request, record_id):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdmin])
 def delete_medical_record_view(request, record_id):
     if request.method == 'DELETE':
         success, message = MedicalRecordService.delete_medical_record(record_id)
