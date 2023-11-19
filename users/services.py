@@ -29,6 +29,20 @@ class UserService:
         except ValidationError as e:
             return str(e)
         
+    @staticmethod
+    def get_all_users():
+        users = User.objects.all()
+        users_data = [
+            {
+                'id': user.id,
+                'name': user.username,
+                'email': user.email,
+                'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            for user in users
+        ]
+        
+        return users_data
 
     @staticmethod
     def generate_reset_token(user):
@@ -55,18 +69,3 @@ class UserService:
             return True, user
         else:
             return False, None
-
-    @staticmethod
-    def get_all_users():
-        users = User.objects.all()
-        users_data = [
-            {
-                'id': user.id,
-                'name': user.username,
-                'email': user.email,
-                'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
-            }
-            for user in users
-        ]
-        
-        return users_data

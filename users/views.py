@@ -40,7 +40,7 @@ def generate_reset_token_view(request):
             token = UserService.generate_reset_token(user)
             return ResponseHandler.success(token)
         except User.DoesNotExist:
-            return ResponseHandler.error('User not found')
+            return ResponseHandler.error('User not found', status_code=404)
 
 @api_view(['POST'])
 def reset_password_view(request):
