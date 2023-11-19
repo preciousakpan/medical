@@ -5,7 +5,7 @@ class MedicalRecordService:
     def create_medical_record(user, name, dob, diagnosis, treatment, doctor, treatment_date):
         medical_record = MedicalRecord.objects.create(
             user=user,
-            patient_name=name,
+            patient_name=f"{user.username}",
             date_of_birth=dob,
             diagnosis=diagnosis,
             treatment=treatment,
