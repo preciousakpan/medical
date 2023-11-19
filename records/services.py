@@ -102,6 +102,10 @@ class MedicalRecordService:
             'treatment_date': treatment_date
         }
 
+        encrypted_doctor_name = encrypt_field(data_to_update['doctor'])
+
+        data_to_update['doctor'] = encrypted_doctor_name
+
         serializer = MedicalRecordSerializer(instance=medical_record, data=data_to_update, partial=True)
 
         if serializer.is_valid():

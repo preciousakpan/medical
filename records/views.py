@@ -36,10 +36,14 @@ def create_medical_record_view(request):
 @permission_classes([IsAuthenticated])
 def get_medical_records_for_user_view(request, user_id):
     if request.method == 'GET':
+        if request.user.is_staff:
+            records = MedicalRecordService.get_medical_records_for_user(user_id)
+            return JsonResponse(ResponseHandler.success(records), status=200)
+
         if request.user.id != int(user_id):
             return JsonResponse(ResponseHandler.error("Unauthorized access"), status=403)
+             
         records = MedicalRecordService.get_medical_records_for_user(user_id)
-        
         return JsonResponse(ResponseHandler.success(records), status=200)
 
 @api_view(['PUT', 'PATCH'])
