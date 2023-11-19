@@ -10,8 +10,8 @@ urlpatterns = [
     path('generate-token/', views.generate_reset_token_view),
     path('reset-password/', views.reset_password_view),
     path('login/', views.login_view),
-    path('token/', CustomTokenObtainPairView.as_view()),
-    path('token/refresh/', TokenRefreshView.as_view()),
+    # path('token/', CustomTokenObtainPairView.as_view()),
+    # path('token/refresh/', TokenRefreshView.as_view()),
 ]
 
 
