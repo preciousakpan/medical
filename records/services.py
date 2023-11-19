@@ -4,6 +4,21 @@ from django.contrib.auth.hashers import make_password
 from datetime import date, datetime
 from .models import MedicalRecord
 from .serializers import MedicalRecordSerializer
+from cryptography.fernet import Fernet
+import base64
+
+key = b'uY4PvQu-uFT-1K000FwJ5jK_Ds21rokzIvlI6f5AImM='
+cipher_suite = Fernet(key)
+
+def encrypt_field(field):
+    encrypted_field = cipher_suite.encrypt(field.encode())
+    return base64.b64encode(encrypted_field).decode()
+
+def decrypt_field(encrypted_field):
+    encrypted_field = base64.b64decode(encrypted_field)
+    decrypted_field = cipher_suite.decrypt(encrypted_field).decode()
+    return decrypted_field
+
 
 class MedicalRecordService:
     @staticmethod
@@ -13,16 +28,13 @@ class MedicalRecordService:
         if treatment_date_obj <= date.today():
             return False, "Treatment date must be a future date"
 
-        hashed_doctor = make_password(doctor)
-        hashed_diagnosis = make_password(diagnosis)
-        hashed_treatment = make_password(treatment)
         data_to_serialize = {
             'user': user.id,
             'patient_name': user.username,
             'date_of_birth': dob,
-            'diagnosis': hashed_diagnosis,
-            'treatment': hashed_treatment,
-            'doctor': hashed_doctor,
+            'diagnosis': diagnosis,
+            'treatment': treatment,
+            'doctor': doctor,
             'treatment_date': treatment_date
         
         }
