@@ -13,5 +13,9 @@ TO RUN THE APP USING DOCKER
     - docker run -p8000:8000 medical
 
 TO RUN THE UNIT TESTS
-    - Make sure the app is running
-    -
+    - Edit lines 14 and 15 to test new users creation (optional)
+    - Replace lines 42 and 43 with existing users in your database
+    - Replace line 70 with an existing name from your database 
+    - Replace line 66 with the JWT token of the user on line 70 (Generate the JWT token from the login endpoint using postman)
+    - Run the app using either python or docker
+    - On another terminal, run "pytest test.py"

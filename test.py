@@ -5,51 +5,81 @@ class TestCRUDAPI:
     @pytest.fixture(autouse=True)
     def setup(self):
         self.base_url = 'http://127.0.0.1:8000/'  # Replace with your API base URL
-        self.create_user()
-    
-    def create_user(self):
+        
+
+    def test_create_user(self):
         try:
+            ######## input new user info
             body = {
-                "name": "precious252",
-                "email": "p1954660@gmail.com",
-                "password": "12345",
-                "is_admin": True
+                "name": "presh3",
+                "email": "presh3@gmail.com",
+                "password": "xxxx",
+                "is_admin": False
             }
             auth_endpoint = self.base_url + 'api/users/create-user/'
+            
+            # First user creation
             response = requests.post(auth_endpoint, json=body)
             assert response.status_code == 201
-            #duplicate user check
-            
-            response = requests.post(auth_endpoint  ,json= body)
-            assert response.status_code == 400  
+
+            # Duplicate user check (expecting 400 for duplicate)
+            response = requests.post(auth_endpoint, json=body)
+            if response.status_code == 400:
+                # Handling the duplicate user scenario without failing the test
+                print("Duplicate user creation attempted. Expected behavior.")
+            else:
+                # If status code is unexpected, consider it as a failure
+                pytest.fail(f"Unexpected status code: {response.status_code}")
+
         except Exception as ex:
             pytest.fail(f"create user failed {ex}")
-    
-    def test_duplicate_user(self):
-        
-    
-        assert True  # Dummy test to check if tests are running
+
             
-    
+    def test_login(self):
+        try:
+            #input existing user info
+            body = {
+                "name": "precious2",
+                "password": "12345"
+            }
+            auth_endpoint = self.base_url + 'api/users/login/'
+            response = requests.post(auth_endpoint, json=body)
+            assert response.status_code == 200
+            body = response.json()
+            assert "message" in body
+            assert isinstance(body["message"], dict)
+            assert isinstance(body["message"]["token"], str)
 
-    # def get_token(self):
-    #     try:
-    #         auth_endpoint = self.base_url + '/api/token/'
-    #         response = requests.post(auth_endpoint, json={'username': 'testuser', 'password': 'testpassword'})
-    #         response.raise_for_status()
-    #         return response.json().get('access')
-    #     except RequestException as e:
-    #         pytest.fail(f"Failed to get token: {e}")
+            # Set the token obtained during login as self.reset_Jwt
+            
 
-    # def test_create_record(self):
-    #     endpoint = self.base_url + '/api/endpoint/'
-    #     headers = {'Authorization': f'Bearer {self.token}'}
-    #     data = {'field1': 'value1', 'field2': 'value2'}  # Your data for creation
-    #     try:
-    #         response = requests.post(endpoint, json=data, headers=headers)
-    #         assert response.status_code == 201
-    #         # Add assertions to check if the object is created properly
-    #     except RequestException as e:
-    #         pytest.fail(f"Failed to create record: {e}")
+        except Exception as ex:
+            print(response.json())
+            pytest.fail(f"login failed {ex}")
 
-    # # Similarly, write other test methods (test_retrieve_record, test_update_record, test_delete_record)
+    def test_get_reset_token(self):
+        try:
+            # Ensure self.reset_Jwt is set by calling the login method
+            
+
+            # Check if self.reset_Jwt is set properly
+            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAwNDQwMDA0LCJpYXQiOjE3MDA0MzY0MDQsImp0aSI6IjU3N2IzYmRlOTNiNDQ1M2M5YzgxOGJiMGQwNTNmNjk2IiwidXNlcl9pZCI6MywibmFtZSI6InByZWNpb3VzMiIsImlzX2FkbWluIjpmYWxzZX0.mxa0nmtjcSLUK_YNLMoFPeEEQ74pkv87hfNPFIHMVs0" #input existing token
+            ############input esiting token
+
+            body = {
+                "name": "precious2"
+            }
+            headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json'
+            }
+            auth_endpoint = self.base_url + 'api/users/generate-token/'
+            response = requests.post(auth_endpoint, json=body, headers=headers)
+            assert response.status_code == 200
+            body = response.json()
+            assert "message" in body
+            assert isinstance(body["message"], str)
+            self.reset_token = body["message"]
+
+        except Exception as ex:
+            pytest.fail(f"gen reset token failed {ex}")
