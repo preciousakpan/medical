@@ -19,3 +19,7 @@ TO RUN THE UNIT TESTS
     - Replace line 66 with the JWT token of the user on line 70 (Generate the JWT token from the login endpoint using postman)
     - Run the app using either python or docker
     - On another terminal, run "pytest test.py"
+
+TO USE THE API DOCUMENTATION
+    - download the json file
+    - import it into postman
